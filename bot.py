@@ -16,7 +16,7 @@ CANALI_MONITORATI = {
 }
 
 def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('hi! i'm the bot created by toommo23! my job is to forward the new roms of your device.')
+    update.message.reply_text('my job is to forward the new roms of your device.')
 
 def inoltra_messaggio(update: Update, context: CallbackContext) -> None:
     canale = update.message.chat.username
