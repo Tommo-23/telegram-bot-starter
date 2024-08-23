@@ -17,14 +17,10 @@ async def start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('my job is to forward the new roms of your device.')
 
 async def inoltra_messaggio(update: Update, context: CallbackContext) -> None:
-    if update.message:
-        canale = update.message.chat.username
-        if canale in CANALI_MONITORATI:
-            await update.message.forward(chat_id=CHAT_DESTINAZIONE)
-        else:
-            print(f"Messaggio ricevuto da un canale non monitorato: {canale}")
+    if update.message and update.message.chat.username in CANALI_MONITORATI:
+        await update.message.forward(chat_id=CHAT_DESTINAZIONE)
     else:
-        print("L'aggiornamento ricevuto non contiene un messaggio valido. Tipo di aggiornamento:", update)
+        print("L'aggiornamento ricevuto non proviene da un canale monitorato.")
 
 def main() -> None:
     application = Application.builder().token(TOKEN).build()
