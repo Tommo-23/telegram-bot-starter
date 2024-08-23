@@ -1,8 +1,6 @@
-# programmed by toommo23
-
 import os
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters, CallbackContext
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
 TOKEN = os.getenv("TOKEN")
 
@@ -15,25 +13,23 @@ CANALI_MONITORATI = {
     '@setupTommo23': 'test',    
 }
 
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('my job is to forward the new roms of your device.')
+async def start(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_text('my job is to forward the new roms of your device.')
 
-def inoltra_messaggio(update: Update, context: CallbackContext) -> None:
+async def inoltra_messaggio(update: Update, context: CallbackContext) -> None:
     canale = update.message.chat.username
     if canale in CANALI_MONITORATI:
         nome_canale = CANALI_MONITORATI[canale]
         testo_inoltrato = f"Nuova ROM per {nome_canale}\n\n{update.message.text}"
-        context.bot.send_message(chat_id=CHAT_DESTINAZIONE, text=testo_inoltrato)
+        await context.bot.send_message(chat_id=CHAT_DESTINAZIONE, text=testo_inoltrato)
 
 def main() -> None:
-    updater = Updater(TOKEN)
-    dispatcher = updater.dispatcher
+    application = Application.builder().token(TOKEN).build()
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(MessageHandler(Filters.text & Filters.chat_type.channel, inoltra_messaggio))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & filters.ChatType.CHANNEL, inoltra_messaggio))
 
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
