@@ -3,8 +3,9 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
 TOKEN = os.getenv("TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # Inserisci l'URL del tuo server
 
-CHAT_DESTINAZIONE = "@TuttoModding"  # Canale di destinazione
+CHAT_DESTINAZIONE = "@TuttoModding"
 
 CANALI_MONITORATI = {
     '@garnet_updates': 'rn13pro5g / PocoX6',
@@ -25,10 +26,16 @@ async def inoltra_messaggio(update: Update, context: CallbackContext) -> None:
 def main() -> None:
     application = Application.builder().token(TOKEN).build()
 
+    # Configura il Webhook
+    application.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.getenv("PORT", "8443")),
+        url_path=TOKEN,
+        webhook_url=f"{WEBHOOK_URL}/{TOKEN}"
+    )
+
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.ChatType.CHANNEL, inoltra_messaggio))
-
-    application.run_polling()
 
 if __name__ == '__main__':
     main()
