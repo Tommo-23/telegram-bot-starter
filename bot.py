@@ -1,6 +1,8 @@
 import os
+import asyncio
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
+from telegram.error import NetworkError
 
 TOKEN = os.getenv("TOKEN")
 
@@ -18,7 +20,12 @@ async def start(update: Update, context: CallbackContext) -> None:
 
 async def inoltra_messaggio(update: Update, context: CallbackContext) -> None:
     if update.message and update.message.chat.username in CANALI_MONITORATI:
-        await update.message.forward(chat_id=CHAT_DESTINAZIONE)
+        try:
+            await update.message.forward(chat_id=CHAT_DESTINAZIONE)
+        except NetworkError as e:
+            print(f"Network error occurred: {e}. Retrying in 5 seconds...")
+            await asyncio.sleep(5)
+            await update.message.forward(chat_id=CHAT_DESTINAZIONE)
     else:
         print("L'aggiornamento ricevuto non proviene da un canale monitorato.")
 
